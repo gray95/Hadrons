@@ -158,6 +158,7 @@ void TWeakEye3pt<FImpl>::setup(void)
 template <typename FImpl>
 void TWeakEye3pt<FImpl>::execute(void)
 {
+	/*
     LOG(Message) << "Computing mesonic weak 3pt contractions, eye topologies" << std::endl;
     LOG(Message) << "gIn : " << par().gammaIn << std::endl;
     LOG(Message) << "gOut: " << par().gammaOut << std::endl;
@@ -209,6 +210,7 @@ void TWeakEye3pt<FImpl>::execute(void)
     saveResult(par().output, "weakEye3pt", result);
     auto &out = envGet(HadronsSerializable, getName());
     out = result;
+*/
 }
 
 END_MODULE_NAMESPACE
