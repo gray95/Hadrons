@@ -187,6 +187,8 @@ void TGamma3pt<FImpl1, FImpl2, FImpl3>::execute(void)
                  << par().q3 << "', with " << par().gamma << " insertions." 
                  << std::endl;
 
+    /*
+
     // Initialise variables. q2 and q3 are normal propagators, q1 may be 
     // sink smeared.
     auto                        &q1 = envGet(SlicedPropagator1, par().q1);
@@ -224,6 +226,8 @@ void TGamma3pt<FImpl1, FImpl2, FImpl3>::execute(void)
     saveResult(par().output, "gamma3pt", result);
     auto &out = envGet(HadronsSerializable, getName());
     out = result;
+
+	*/
 }
 
 END_MODULE_NAMESPACE

@@ -134,6 +134,7 @@ void TGauss<FImpl>::setup(void)
 template <typename FImpl>
 void TGauss<FImpl>::execute(void)
 {
+/*
     auto &rho = envGet(PropagatorField, getName());
     envGetTmp(ComplexField, component);
     envGetTmp(ComplexField, ScalarRho);
@@ -191,6 +192,8 @@ void TGauss<FImpl>::execute(void)
 
     //compute output field rho
     rho=ScalarRho*idMat;
+
+*/
 }
 
 END_MODULE_NAMESPACE
