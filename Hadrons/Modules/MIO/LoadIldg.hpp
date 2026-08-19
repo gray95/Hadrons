@@ -16,6 +16,7 @@ class LoadIldgPar: Serializable
 {
 public:
     GRID_SERIALIZABLE_CLASS_MEMBERS(LoadIldgPar,
+                                    std::string, file,
                                     unsigned int, i);
 };
 
@@ -68,14 +69,24 @@ std::vector<std::string> TLoadIldg<FImpl>::getOutput(void)
 template <typename FImpl>
 void TLoadIldg<FImpl>::setup(void)
 {
-    
+    envCreateLat(LatticeGaugeField, getName()); 
 }
 
 // execution ///////////////////////////////////////////////////////////////////
 template <typename FImpl>
 void TLoadIldg<FImpl>::execute(void)
 {
-    
+    FieldMetaData header;
+    std::string   fileName = par().file + "."
+                             + std::to_string(vm().getTrajectory());
+    LOG(Message) << "Loading ILDG gauge field from file '" << fileName
+                 << "'" << std::endl;
+
+    auto &U = envGet(LatticeGaugeField, getName());
+    IldgReader _IldgReader;
+   _IldgReader.open(fileName);
+   _IldgReader.readConfiguration(U,header);
+   _IldgReader.close();
 }
 
 END_MODULE_NAMESPACE
