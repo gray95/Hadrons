@@ -39,9 +39,11 @@ BEGIN_HADRONS_NAMESPACE
 
  gauge         Name of the gauge field object to write
  fileStem      Namestem of the file to write the gauge field to
- ensembleLabel Label of the ensemble. Recommended this includes
-               a suffix identifying this as gauge-fixed and which gauge
- ensembleId    Label of the collaboration.
+ ensembleLabel Label of the ensemble. Recommended this is gauge info.
+ ensembleId    Collaboration Name
+ gaugeGroup    type of field - either SU or Sp
+ matrixFormat  save gauge field in reduced or full format
+ precision     save gauge field in single or double precision
  ******************************************************************************/
 
 
@@ -54,7 +56,10 @@ public:
                                     std::string, gauge,
                                     std::string, fileStem,
                                     std::string, ensembleLabel,
-                                    std::string, ensembleId);
+                                    std::string, ensembleId,
+                                    std::string, gaugeGroup,
+                                    std::string, matrixFormat,
+                                    std::string, precision);
 };
 
 template <typename GImpl>
@@ -111,14 +116,19 @@ template <typename GImpl>
 void TSaveIldg<GImpl>::execute(void)
 {
     std::string fileName = par().fileStem + "." + std::to_string(vm().getTrajectory());
-    LOG(Message) << "Saving ILDG configuration to file '" << fileName
+    LOG(Message) << "DEBUG:: Saving ILDG configuration to file '" << fileName
                  << "'" << std::endl;
 
     auto &U = envGet(GaugeField, par().gauge);
+    using stats = PeriodicGaugeStatistics;
     makeFileDir(fileName, U.Grid());
     IldgWriter _IldgWriter(U.Grid()->IsBoss());
     _IldgWriter.open(fileName);
-    _IldgWriter.writeConfiguration(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+
+    if( par().gaugeGroup == "SU" ) {
+        _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::REDUCED,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+    }
+
     _IldgWriter.close();
 }
 
