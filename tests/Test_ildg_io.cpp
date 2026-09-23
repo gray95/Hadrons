@@ -23,10 +23,8 @@
  */
 
 /*  END LEGAL */
-#include <Hadrons/Environment.hpp>
 #include <Hadrons/Modules.hpp>
 #include <Hadrons/Application.hpp>
-#include <Hadrons/Global.hpp>
 
 using namespace Grid;
 using namespace Hadrons;
@@ -48,20 +46,37 @@ int main(int argc, char *argv[])
 
     globalPar.runId = "Test_ildg_io";
     globalPar.trajCounter.start = 1;
-    globalPar.trajCounter.end = 3;
-    globalPar.trajCounter.step = 1;
+    globalPar.trajCounter.end   = 2;
+    globalPar.trajCounter.step  = 1;
 
     application.setPar(globalPar);
     application.createModule<MGauge::Unit>("lattice");
 
-    ildgPar.gauge = "lattice";          // name of gauge field
-    ildgPar.fileStem = "ildg_test";     // stem of filename
-    ildgPar.ensembleLabel = "su3gauge"; // add suffix gauge_fixed_su3
-    ildgPar.ensembleId = "telos";       // collaboration label
+    ildgPar.gauge         = "lattice";          // name of gauge field
+    ildgPar.ensembleLabel = "su" + std::to_string(Nc) + "gauge"; // add suffix gauge_fixed_su3
+    ildgPar.ensembleId    = "telos";       // collaboration label
   
-    ildgPar.gaugeGroup = "SU";
+    ildgPar.gaugeGroup    = "su";
 
-    application.createModule<MIO::SaveIldg>("save-ildg-lattice", ildgPar);
+    ildgPar.fileStem      = "ildg_full_double";     // stem of filename
+    ildgPar.precision     = "double";
+    ildgPar.reducedFormat = false;
+    application.createModule<MIO::SaveIldg>("save-lat-full-double", ildgPar);
+
+    ildgPar.fileStem      = "ildg_full_single";     // stem of filename
+    ildgPar.precision     = "single";
+    ildgPar.reducedFormat = false;
+    application.createModule<MIO::SaveIldg>("save-lat-full-single", ildgPar);
+
+    ildgPar.fileStem      = "ildg_red_double";     // stem of filename
+    ildgPar.precision     = "double";
+    ildgPar.reducedFormat = true;
+    application.createModule<MIO::SaveIldg>("save-lat-reduced-double", ildgPar);
+
+    ildgPar.fileStem      = "ildg_red_single";     // stem of filename
+    ildgPar.precision     = "single";
+    ildgPar.reducedFormat = true;
+    application.createModule<MIO::SaveIldg>("save-lat-reduced-single", ildgPar);
 
     application.run();
 
