@@ -40,45 +40,67 @@ int main(int argc, char *argv[])
     HadronsLogDebug.Active(GridLogDebug.isActive());
     LOG(Message) << "Grid initialized" << std::endl;
 
-    Application            application;
-    Application::GlobalPar globalPar; 
-    MIO::SaveIldgPar       ildgPar;
+    Application appSaveConfigs, appLoadConfigs;
 
-    globalPar.runId = "Test_ildg_io";
+    Application::GlobalPar globalPar; 
+    MIO::SaveIldgPar       saveIldgPar;
+    MIO::LoadIldgPar       loadIldgPar;
+
+    globalPar.runId = "saveIldg";
     globalPar.trajCounter.start = 1;
     globalPar.trajCounter.end   = 2;
     globalPar.trajCounter.step  = 1;
 
-    application.setPar(globalPar);
-    application.createModule<MGauge::Unit>("lattice");
+    appSaveConfigs.setPar(globalPar);
 
-    ildgPar.gauge         = "lattice";          // name of gauge field
-    ildgPar.ensembleLabel = "su" + std::to_string(Nc) + "gauge"; // add suffix gauge_fixed_su3
-    ildgPar.ensembleId    = "telos";       // collaboration label
+    // generate random SU(Nc) cfgs
+    appSaveConfigs.createModule<MGauge::Random>("lattice");
+
+    // save cfgs in different formats
+    saveIldgPar.gauge         = "lattice";          // name of gauge field
+    saveIldgPar.ensembleId    = "telos";            // collaboration label
+    saveIldgPar.ensembleLabel = "su" + std::to_string(Nc) + "unit_gauge";
+    saveIldgPar.gaugeGroup    = "su";
+
+    saveIldgPar.fileStem      = "ildg_full_double";     // stem of filename
+    saveIldgPar.precision     = "double";
+    saveIldgPar.reducedFormat = false;
+    appSaveConfigs.createModule<MIO::SaveIldg>("save-lat-full-double", saveIldgPar);
+
+    saveIldgPar.fileStem      = "ildg_full_single";     // stem of filename
+    saveIldgPar.precision     = "single";
+    saveIldgPar.reducedFormat = false;
+    appSaveConfigs.createModule<MIO::SaveIldg>("save-lat-full-single", saveIldgPar);
+
+    saveIldgPar.fileStem      = "ildg_red_double";     // stem of filename
+    saveIldgPar.precision     = "double";
+    saveIldgPar.reducedFormat = true;
+    appSaveConfigs.createModule<MIO::SaveIldg>("save-lat-reduced-double", saveIldgPar);
+
+    saveIldgPar.fileStem      = "ildg_red_single";     // stem of filename
+    saveIldgPar.precision     = "single";
+    saveIldgPar.reducedFormat = true;
+    appSaveConfigs.createModule<MIO::SaveIldg>("save-lat-reduced-single", saveIldgPar);
+    
+    appSaveConfigs.run();
+
+    // read the cfgs back
+    globalPar.runId = "loadIldg";
+    appLoadConfigs.setPar(globalPar);
   
-    ildgPar.gaugeGroup    = "su";
+    loadIldgPar.fileStem = "ildg_full_double";
+    appLoadConfigs.createModule<MIO::LoadIldg>("load-lat-full-double", loadIldgPar);
 
-    ildgPar.fileStem      = "ildg_full_double";     // stem of filename
-    ildgPar.precision     = "double";
-    ildgPar.reducedFormat = false;
-    application.createModule<MIO::SaveIldg>("save-lat-full-double", ildgPar);
+    loadIldgPar.fileStem = "ildg_full_single";
+    appLoadConfigs.createModule<MIO::LoadIldg>("load-lat-full-single", loadIldgPar);
 
-    ildgPar.fileStem      = "ildg_full_single";     // stem of filename
-    ildgPar.precision     = "single";
-    ildgPar.reducedFormat = false;
-    application.createModule<MIO::SaveIldg>("save-lat-full-single", ildgPar);
+    loadIldgPar.fileStem = "ildg_red_double";
+    appLoadConfigs.createModule<MIO::LoadIldg>("load-lat-reduced-double", loadIldgPar);
 
-    ildgPar.fileStem      = "ildg_red_double";     // stem of filename
-    ildgPar.precision     = "double";
-    ildgPar.reducedFormat = true;
-    application.createModule<MIO::SaveIldg>("save-lat-reduced-double", ildgPar);
+    loadIldgPar.fileStem = "ildg_red_single";
+    appLoadConfigs.createModule<MIO::LoadIldg>("load-lat-reduced-single", loadIldgPar);
 
-    ildgPar.fileStem      = "ildg_red_single";     // stem of filename
-    ildgPar.precision     = "single";
-    ildgPar.reducedFormat = true;
-    application.createModule<MIO::SaveIldg>("save-lat-reduced-single", ildgPar);
-
-    application.run();
+    appLoadConfigs.run();
 
     Grid_finalize();
     
