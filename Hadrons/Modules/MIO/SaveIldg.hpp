@@ -42,7 +42,7 @@ BEGIN_HADRONS_NAMESPACE
  ensembleLabel Label of the ensemble. Recommended this is gauge info.
  ensembleId    Collaboration Name
  gaugeGroup    type of field - either SU or Sp
- reducedFormat  save gauge field in reduced or full format
+ reducedFormat save gauge field in reduced or full format
  precision     save gauge field in single or double precision
  ******************************************************************************/
 
@@ -125,17 +125,33 @@ void TSaveIldg<GImpl>::execute(void)
     IldgWriter _IldgWriter(U.Grid()->IsBoss());
     _IldgWriter.open(fileName);
 
-    if( par().precision == "single" ) {
-        if( par().reducedFormat ) {
-            _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::REDUCED,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
-        } else if ( !par().reducedFormat) {
-            _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::FULL,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+    if( par().gaugeGroup == "su" ) {
+        if( par().precision == "single" ) {
+            if( par().reducedFormat ) {
+                _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::REDUCED,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            } else if ( !par().reducedFormat) {
+                _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::FULL,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            }
+        } else if ( par().precision == "double" ) {
+             if( par().reducedFormat ) {
+                _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::REDUCED,FloatingPointFormat::IEEE64BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            } else if ( !par().reducedFormat) {
+                _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::FULL,FloatingPointFormat::IEEE64BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            }
         }
-    } else if ( par().precision == "double" ) {
-         if( par().reducedFormat ) {
-            _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::REDUCED,FloatingPointFormat::IEEE64BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
-        } else if ( !par().reducedFormat) {
-            _IldgWriter.writeConfiguration<stats,GroupName::SU,MatrixFormat::FULL,FloatingPointFormat::IEEE64BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+    } else if( par().gaugeGroup == "sp" ) {
+        if( par().precision == "single" ) {
+            if( par().reducedFormat ) {
+                _IldgWriter.writeConfiguration<stats,GroupName::Sp,MatrixFormat::REDUCED,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            } else if ( !par().reducedFormat) {
+                _IldgWriter.writeConfiguration<stats,GroupName::Sp,MatrixFormat::FULL,FloatingPointFormat::IEEE32BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            }
+        } else if ( par().precision == "double" ) {
+             if( par().reducedFormat ) {
+                _IldgWriter.writeConfiguration<stats,GroupName::Sp,MatrixFormat::REDUCED,FloatingPointFormat::IEEE64BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            } else if ( !par().reducedFormat) {
+                _IldgWriter.writeConfiguration<stats,GroupName::Sp,MatrixFormat::FULL,FloatingPointFormat::IEEE64BIG>(U, vm().getTrajectory(), par().ensembleId, par().ensembleLabel);
+            }
         }
     }
 
