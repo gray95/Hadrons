@@ -16,8 +16,7 @@ class LoadIldgPar: Serializable
 {
 public:
     GRID_SERIALIZABLE_CLASS_MEMBERS(LoadIldgPar,
-                                    std::string, file,
-                                    unsigned int, i);
+                                    std::string, fileStem);
 };
 
 template <typename FImpl>
@@ -77,7 +76,7 @@ template <typename FImpl>
 void TLoadIldg<FImpl>::execute(void)
 {
     FieldMetaData header;
-    std::string   fileName = par().file + "."
+    std::string   fileName = par().fileStem + "."
                              + std::to_string(vm().getTrajectory());
     LOG(Message) << "Loading ILDG gauge field from file '" << fileName
                  << "'" << std::endl;
